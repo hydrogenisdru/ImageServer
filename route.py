@@ -35,8 +35,6 @@ def upload():
                 result = uploadfile(uuid=uuid, name=filename, code=-2, file_type=mime_type,
                                     msg="file type not allowed")
             else:
-                # upload_request = UploadFileRequest(app.config['BUCKET'], u'/slime.jpeg', u'/tmp/slime.jpeg')
-                # upload_file_ret = cos_client.upload_file(upload_request)
                 auth = cos_auth.Auth(cos_client.get_cred())
                 expired = int(time.time()) + 999
                 cos_path = app.config['UPLOAD_FOLDER'] + filename
@@ -111,10 +109,11 @@ def get_image(uuid):
 @app.route('/check/<uuid>', methods=['GET'])
 def check_image(uuid):
     try:
-        if get_image_info(uuid):
-            return 'true'
+        info = get_image_info(uuid)
+        if info:
+            return info['access_url']
         else:
-            return 'success'
+            return ''
     # try:
     #     if image_storage.__contains__(uuid):
     #         return "true"
